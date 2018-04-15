@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <ctime>
 #include "LongDouble.h"
 
 using namespace std;
@@ -13,6 +14,7 @@ struct TestT {
 
 	char op;
 	bool correct;
+	double time;
 };
 
 TestT testMe(char op, const LongDouble &op1, const LongDouble &op2, const LongDouble &res) {
@@ -20,6 +22,8 @@ TestT testMe(char op, const LongDouble &op1, const LongDouble &op2, const LongDo
 
 	test.op1 = op1;
 	test.op2 = op2;
+
+	clock_t t0 = clock();
 
 	switch (op) {
 		case '+':
@@ -35,6 +39,9 @@ TestT testMe(char op, const LongDouble &op1, const LongDouble &op2, const LongDo
 			break;
 	}
 
+	clock_t t1 = clock();
+
+	test.time = ((double) (t1 - t0)) * 1000 / CLOCKS_PER_SEC;
 	test.expected = res;
 	test.op = op;
 	test.correct = test.expected == test.obtained;
@@ -51,7 +58,7 @@ void printTestResults(const vector<TestT>& tests) {
 		cout << "Test" << (i + 1) << ". ";
 
 		if (tests[i].correct)
-			cout << "OK";
+			cout << "OK (" << tests[i].time << " ms)";
 		else
 			cout << "Failed: " << tests[i].op1 << " " << tests[i].op << " " << tests[i].op2 << " = " << tests[i].expected << " != " << tests[i].obtained;
 		
@@ -65,14 +72,16 @@ void printTestResults(const vector<TestT>& tests) {
 void addTest() {
 	vector<TestT> additions;
 
-	additions.push_back(testMe('+', LongDouble("0"), LongDouble("0"), LongDouble("0")));
+	additions.push_back(testMe('+', 0, 0, 0));
 
-	additions.push_back(testMe('+', LongDouble("0"), LongDouble("45"), LongDouble("45")));
-	additions.push_back(testMe('+', LongDouble("45"), LongDouble("0"), LongDouble("45")));
-	additions.push_back(testMe('+', LongDouble("0"), LongDouble("-45"), LongDouble("-45")));
-	additions.push_back(testMe('+', LongDouble("-45"), LongDouble("0"), LongDouble("-45")));
+	additions.push_back(testMe('+', 0, 45, 45));
+	additions.push_back(testMe('+', 45, 0, 45));
+	additions.push_back(testMe('+', 0, -45, -45));
+	additions.push_back(testMe('+', -45, 0, -45));
 
-	additions.push_back(testMe('+', LongDouble("-45"), LongDouble("45"), LongDouble("0")));
+	additions.push_back(testMe('+', -45, 45, 0));
+	additions.push_back(testMe('+', 9, 1, 10));
+	additions.push_back(testMe('+', -9, -1, -10));
 
 	additions.push_back(testMe('+', LongDouble("27.5"), LongDouble("1.025"), LongDouble("28.525")));
 	additions.push_back(testMe('+', LongDouble("-27.5"), LongDouble("1.025"), LongDouble("-26.475")));
@@ -82,9 +91,62 @@ void addTest() {
 	additions.push_back(testMe('+', LongDouble("2.7"), LongDouble("0.018281828"), LongDouble("2.718281828")));
 	additions.push_back(testMe('+', LongDouble("3.14159"), LongDouble("0.00000265357989"), LongDouble("3.14159265357989")));
 
+	additions.push_back(testMe('+', -12, 25, 13));
+	additions.push_back(testMe('+', 12, -25, -13));
+	additions.push_back(testMe('+', -12, -25, -37));
+	additions.push_back(testMe('+', 12, 25, 37));
+
+	additions.push_back(testMe('+', 123456789, 987654321, LongDouble("1111111110")));
+	additions.push_back(testMe('+', 987654321, 123456789, LongDouble("1111111110")));
+	additions.push_back(testMe('+', -123456789, 987654321, LongDouble("864197532")));
+	additions.push_back(testMe('+', -987654321, 123456789, LongDouble("-864197532")));
+	additions.push_back(testMe('+', -123456789, -987654321, LongDouble("-1111111110")));
+	additions.push_back(testMe('+', -987654321, -123456789, LongDouble("-1111111110")));
+	
+	std::cout << "Test of additions LongDouble" << std::endl;
 	printTestResults(additions);
+}
+
+void subTest() {
+	std::vector<TestT> subtractions;
+
+	subtractions.push_back(testMe('-', 0, 0, 0));
+
+	subtractions.push_back(testMe('-', 0, 25, -25));
+	subtractions.push_back(testMe('-', 0, -25, 25));
+	subtractions.push_back(testMe('-', -25, 0, -25));
+	subtractions.push_back(testMe('-', 25, 0, 25));
+
+	subtractions.push_back(testMe('-', -12, 25, -37));
+	subtractions.push_back(testMe('-', 12, -25, 37));
+	subtractions.push_back(testMe('-', -12, -25, 13));
+	subtractions.push_back(testMe('-', 12, 25, -13));
+
+	subtractions.push_back(testMe('-', 10, 1, 9));
+	subtractions.push_back(testMe('-', 1000, 1, 999));
+	subtractions.push_back(testMe('-', -10, 1, -11));
+
+	subtractions.push_back(testMe('-', 12.5, 1.45, 11.05));
+	subtractions.push_back(testMe('-', -12.5, 1.45, -13.95));
+	subtractions.push_back(testMe('-', 12.5, -1.45, 13.95));
+	subtractions.push_back(testMe('-', -12.5, -1.45, -11.05));
+
+	subtractions.push_back(testMe('-', LongDouble("3.14159265357989"), LongDouble("3.14"), LongDouble("0.00159265357989")));
+	subtractions.push_back(testMe('-', LongDouble("2.718281828"), LongDouble("0.018281828"), LongDouble("2.7")));
+	subtractions.push_back(testMe('-', LongDouble("5.000000001"), LongDouble("0.000000001"), LongDouble("5")));
+
+	subtractions.push_back(testMe('-', 123456789, 987654321, LongDouble("-864197532")));
+	subtractions.push_back(testMe('-', 987654321, 123456789, LongDouble("864197532")));
+	subtractions.push_back(testMe('-', -123456789, 987654321, LongDouble("-1111111110")));
+	subtractions.push_back(testMe('-', -987654321, 123456789, LongDouble("-1111111110")));
+	subtractions.push_back(testMe('-', -123456789, -987654321, LongDouble("864197532")));
+	subtractions.push_back(testMe('-', -987654321, -123456789, LongDouble("-864197532")));
+
+	std::cout << "Test of subtractions LongDouble" << std::endl;
+	printTestResults(subtractions);
 }
 
 int main() {
 	addTest();
+	subTest();
 }

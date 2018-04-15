@@ -36,6 +36,9 @@ void LongDouble::removeZeroes() {
 		exponent--;
 	}
 
+	while (digits.size() > 1 && digits[digits.size() - 1] == 0)
+		digits.erase(digits.end() - 1);
+
 	if (digits.size() == 1 && digits[0] == 0)
 		sign = 1;
 }
@@ -57,7 +60,7 @@ LongDouble::LongDouble(const LongDouble& x) {
 
 LongDouble::LongDouble(long double value) {
 	stringstream ss;
-	ss << fixed << setprecision(15) << value;
+	ss << setprecision(15) << value;
 
 	initFromString(ss.str());
 	removeZeroes();
@@ -177,7 +180,7 @@ LongDouble LongDouble::operator+(const LongDouble& x) const {
 			res.digits[i] %= 10;
 		}
 
-		res.exponent = exp + (res.digits[0] == 0);
+		res.exponent = exp + 1;
 		res.removeZeroes();
 
 		return res;
@@ -238,7 +241,7 @@ LongDouble LongDouble::operator-(const LongDouble& x) const {
 			}
 		}
 
-		res.exponent = exp + (res.digits[0] == 0);
+		res.exponent = exp + 1;
 		res.removeZeroes();
 
 		return res;
@@ -269,6 +272,20 @@ LongDouble LongDouble::operator*(const LongDouble& x) const {
 	}
 
 	res.removeZeroes();
+
+	return res;
+}
+
+LongDouble LongDouble::operator++(int) {
+	LongDouble res(*this);
+	*this = *this + 1;
+
+	return res;
+}
+
+LongDouble LongDouble::operator--(int) {
+	LongDouble res(*this);
+	*this = *this - 1;
 
 	return res;
 }

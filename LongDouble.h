@@ -31,5 +31,8 @@ public:
 	LongDouble operator-(const LongDouble& x) const;
 	LongDouble operator*(const LongDouble& x) const;
 
+	LongDouble operator++(int);
+	LongDouble operator--(int);
+
 	friend std::ostream& operator<<(std::ostream& os, const LongDouble& value);
 };
