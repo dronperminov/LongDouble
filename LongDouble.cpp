@@ -2,6 +2,29 @@
 
 using namespace std;
 
+void LongDouble::initFromString(const string& s) {
+	size_t index;
+
+	if (s[0] == '-') {
+		sign = -1;
+		index = 1;
+	} else {
+		sign = 1;
+		index = 0;
+	}
+
+	exponent = s.length() - index;
+
+	while (index < s.length()) {
+		if (s[index] == '.')
+			exponent = sign == 1 ? index : index - 1;
+		else
+			digits.push_back(s[index] - '0');
+
+		index++;
+	}
+}
+
 void LongDouble::removeZeroes() {
 	size_t n = max((long) 1, exponent);
 
@@ -32,28 +55,16 @@ LongDouble::LongDouble(const LongDouble& x) {
 		digits[i] = x.digits[i];
 }
 
-LongDouble::LongDouble(const std::string& s) {
-	size_t index;
+LongDouble::LongDouble(long double value) {
+	stringstream ss;
+	ss << fixed << setprecision(15) << value;
 
-	if (s[0] == '-') {
-		sign = -1;
-		index = 1;
-	} else {
-		sign = 1;
-		index = 0;
-	}
+	initFromString(ss.str());
+	removeZeroes();
+}
 
-	exponent = s.length() - index;
-
-	while (index < s.length()) {
-		if (s[index] == '.')
-			exponent = sign == 1 ? index : index - 1;
-		else
-			digits.push_back(s[index] - '0');
-
-		index++;
-	}
-
+LongDouble::LongDouble(const string& s) {
+	initFromString(s);
 	removeZeroes();
 }
 
