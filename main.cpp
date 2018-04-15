@@ -103,12 +103,12 @@ void addTest() {
 	additions.push_back(testMe('+', -123456789, -987654321, LongDouble("-1111111110")));
 	additions.push_back(testMe('+', -987654321, -123456789, LongDouble("-1111111110")));
 	
-	std::cout << "Test of additions LongDouble" << std::endl;
+	cout << "Test of additions LongDouble" << endl;
 	printTestResults(additions);
 }
 
 void subTest() {
-	std::vector<TestT> subtractions;
+	vector<TestT> subtractions;
 
 	subtractions.push_back(testMe('-', 0, 0, 0));
 
@@ -142,11 +142,48 @@ void subTest() {
 	subtractions.push_back(testMe('-', -123456789, -987654321, LongDouble("864197532")));
 	subtractions.push_back(testMe('-', -987654321, -123456789, LongDouble("-864197532")));
 
-	std::cout << "Test of subtractions LongDouble" << std::endl;
+	cout << "Test of subtractions LongDouble" << endl;
 	printTestResults(subtractions);
+}
+
+void multTest() {
+	vector<TestT> multiplications;
+
+	multiplications.push_back(testMe('*', 0, 0, 0));
+	multiplications.push_back(testMe('*', 0, 123.5, 0));
+	multiplications.push_back(testMe('*', 123.5, 0, 0));
+	multiplications.push_back(testMe('*', 0, -123.5, 0));
+	multiplications.push_back(testMe('*', -123.5, 0, 0));
+
+	multiplications.push_back(testMe('*', 1, 123.5, 123.5));
+	multiplications.push_back(testMe('*', 1, -123.5, -123.5));
+	multiplications.push_back(testMe('*', 123.5, 1, 123.5));
+	multiplications.push_back(testMe('*', 123.5, -1, -123.5));
+	multiplications.push_back(testMe('*', -1, -123.5, 123.5));
+
+	multiplications.push_back(testMe('*', 12, 13, 156));
+	multiplications.push_back(testMe('*', -12, 13, -156));
+	multiplications.push_back(testMe('*', 12, -13, -156));
+	multiplications.push_back(testMe('*', -12, -13, 156));
+
+	multiplications.push_back(testMe('*', 12.5, 2.05, 25.625));
+	multiplications.push_back(testMe('*', 12.5, -2.05, -25.625));
+	multiplications.push_back(testMe('*', -12.5, 2.05, -25.625));
+	multiplications.push_back(testMe('*', -12.5, -2.05, 25.625));
+
+	multiplications.push_back(testMe('*', 123456789, 987654321, LongDouble("121932631112635269")));
+	multiplications.push_back(testMe('*', 987654321, 123456789, LongDouble("121932631112635269")));
+	multiplications.push_back(testMe('*', -123456789, 987654321, LongDouble("-121932631112635269")));
+	multiplications.push_back(testMe('*', -987654321, 123456789, LongDouble("-121932631112635269")));
+	multiplications.push_back(testMe('*', -123456789, -987654321, LongDouble("121932631112635269")));
+	multiplications.push_back(testMe('*', -987654321, -123456789, LongDouble("121932631112635269")));
+
+	cout << "Test of multiplications LongDouble" << endl;
+	printTestResults(multiplications);
 }
 
 int main() {
 	addTest();
 	subTest();
+	multTest();
 }
