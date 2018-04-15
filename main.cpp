@@ -37,6 +37,10 @@ TestT testMe(char op, const LongDouble &op1, const LongDouble &op2, const LongDo
 		case '*':
 			test.obtained = op1 * op2;
 			break;
+
+		case '/':
+			test.obtained = op1 / op2;
+			break;
 	}
 
 	clock_t t1 = clock();
@@ -182,8 +186,42 @@ void multTest() {
 	printTestResults(multiplications);
 }
 
+void divTest() {
+	vector<TestT> divisions;
+
+	divisions.push_back(testMe('/', 0, 5, 0));
+	divisions.push_back(testMe('/', 0, 3, 0));
+	divisions.push_back(testMe('/', 0, -5, 0));
+	divisions.push_back(testMe('/', 0, -3, 0));
+
+	divisions.push_back(testMe('/', 0, 0.125, 0));
+	divisions.push_back(testMe('/', 0, 0.0037, 0));
+	divisions.push_back(testMe('/', 0, -0.125, 0));
+	divisions.push_back(testMe('/', 0, -0.0037, 0));
+
+	divisions.push_back(testMe('/', 1, 0.125, 8));
+	divisions.push_back(testMe('/', 1, -0.125, -8));
+	divisions.push_back(testMe('/', -1, 0.125, -8));
+	divisions.push_back(testMe('/', -1, -0.125, 8));
+
+	divisions.push_back(testMe('/', 3, 5, 0.6));
+	divisions.push_back(testMe('/', 15, 3, 5));
+	divisions.push_back(testMe('/', 45, 6, 7.5));
+
+	divisions.push_back(testMe('/', 12345, 800, 15.43125));
+
+	divisions.push_back(testMe('/', LongDouble("121932631112635269"), LongDouble("-987654321"), LongDouble("-123456789")));
+	divisions.push_back(testMe('/', LongDouble("121932631112635269"), LongDouble("987654321"), LongDouble("123456789")));
+	divisions.push_back(testMe('/', LongDouble("-121932631112635269"), LongDouble("987654321"), LongDouble("-123456789")));
+	divisions.push_back(testMe('/', LongDouble("-121932631112635269"), LongDouble("-987654321"), LongDouble("123456789")));
+
+	cout << "Test of divisions LongDouble" << endl;
+	printTestResults(divisions);
+}
+
 int main() {
 	addTest();
 	subTest();
 	multTest();
+	divTest();
 }

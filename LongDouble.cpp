@@ -39,8 +39,10 @@ void LongDouble::removeZeroes() {
 	while (digits.size() > 1 && digits[digits.size() - 1] == 0)
 		digits.erase(digits.end() - 1);
 
-	if (digits.size() == 1 && digits[0] == 0)
+	if (digits.size() == 1 && digits[0] == 0) {
+		exponent = 1;
 		sign = 1;
+	}
 }
 
 LongDouble::LongDouble() {
@@ -69,6 +71,17 @@ LongDouble::LongDouble(long double value) {
 LongDouble::LongDouble(const string& s) {
 	initFromString(s);
 	removeZeroes();
+}
+
+LongDouble& LongDouble::operator=(const LongDouble& x) {
+	if (this == &x)
+		return *this;
+
+	sign = x.sign;
+	exponent = x.exponent;
+	digits = vector<int>(x.digits);
+
+	return *this;
 }
 
 bool LongDouble::operator>(const LongDouble& x) const {
@@ -276,6 +289,29 @@ LongDouble LongDouble::operator*(const LongDouble& x) const {
 	return res;
 }
 
+LongDouble LongDouble::operator/(const LongDouble& x) const {
+	LongDouble res = *this * x.inverse();
+
+	size_t i = res.digits.size() - 1 - max((long)0, exponent);
+	size_t n = max((long) 0, res.exponent);
+
+	if (i > n && res.digits[i] == 9) {
+		while (i > n && res.digits[i] == 9)
+			i--;
+
+		if (res.digits[i] == 9) {
+			res.digits.erase(res.digits.begin() + n, res.digits.end());
+			res = res + res.sign;
+		}
+		else {
+			res.digits.erase(res.digits.begin() + i + 1, res.digits.end());
+			res.digits[i]++;
+		}
+	}
+
+	return res;
+}
+
 LongDouble LongDouble::operator++(int) {
 	LongDouble res(*this);
 	*this = *this + 1;
@@ -286,6 +322,50 @@ LongDouble LongDouble::operator++(int) {
 LongDouble LongDouble::operator--(int) {
 	LongDouble res(*this);
 	*this = *this - 1;
+
+	return res;
+}
+
+LongDouble LongDouble::inverse() const {
+	if (digits.size() == 1 && digits[0] == 0)
+		throw string("LongDouble LongDouble::inverse() - division by zero!");
+
+	LongDouble x(*this);
+	x.sign = 1;
+
+	LongDouble d("1");
+
+	LongDouble res;
+	res.sign = sign;
+	res.exponent = 1;
+	res.digits = vector<int>();
+
+	while (x < 1) {
+		x.exponent++;
+		res.exponent++;
+	}
+
+	while (d < x)
+		d.exponent++;	
+	
+	res.exponent -= d.exponent - 1;
+
+	LongDouble mod = d;
+
+	int numbers = 0;
+
+	do {
+		int div = 0;
+
+		while (mod >= x) {
+			div++;
+			mod = mod - x;
+		}
+
+		mod = mod * 10;
+		res.digits.push_back(div);
+		numbers++;
+	} while (mod != 0 && numbers < divDigits + res.exponent);
 
 	return res;
 }
@@ -329,12 +409,12 @@ ostream& operator<<(ostream& os, const LongDouble& value) {
 			os << value.digits[i];
 	}
 
-	os << "\t(";
+	/*os << "\t(";
 	if (value.sign == -1)
 		os << '-';	
 	for (size_t i = 0; i < value.digits.size(); i++)
 		os << value.digits[i];
-	os << ", exp: " << value.exponent << ")";
+	os << ", exp: " << value.exponent << ")";*/
 
 	return os;
 }
