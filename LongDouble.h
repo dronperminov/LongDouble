@@ -6,6 +6,7 @@
 
 class LongDouble {
 	const size_t divDigits = 1000;
+	const size_t sqrtDigits = 100;
 
 	int sign;
 	std::vector<int> digits;
@@ -46,6 +47,7 @@ public:
 	LongDouble operator--(int);
 
 	LongDouble inverse() const;
+	LongDouble sqrt() const;
 	LongDouble pow(const LongDouble &n) const;
 	LongDouble abs() const;
 

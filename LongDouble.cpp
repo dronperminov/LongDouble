@@ -51,7 +51,7 @@ void LongDouble::normalize() {
 	size_t start = max(exponent, (long) 0);
 	size_t realDigits = digits.size() - start;
 
-	if (realDigits == divDigits) {
+	if (realDigits >= divDigits) {
 		size_t count = 0;
 		size_t maxCount = 0;
 
@@ -74,11 +74,17 @@ void LongDouble::normalize() {
 		if (maxCount > divDigits * 4 / 5) {
 			i = digits.size() - 1;
 
-			while (i > 0 && digits[i] != 9)
-				i--;
+			do {
+				count = 0;
 
-			while (i > 0 && digits[i] == 9)
-				i--;
+				while (i > 0 && digits[i] != 9)
+					i--;
+
+				while (i > 0 && digits[i] == 9) {
+					count++;
+					i--;
+				}
+			} while (count != maxCount);
 
 			digits.erase(digits.begin() + i + 1, digits.end());
 			digits[i]++;
@@ -425,6 +431,31 @@ LongDouble LongDouble::inverse() const {
 	} while (mod != 0 && numbers < divDigits + max((long) 0, res.exponent));
 
 	return res;
+}
+
+LongDouble LongDouble::sqrt() const {
+	if (sign == -1)
+		throw string("LongDouble LongDouble::sqrt() - number is negative");
+
+	if (digits.size() == 1 && digits[0] == 0)
+		return 0;
+
+	LongDouble x0;
+	LongDouble p("0.5");
+	LongDouble xk("0.5");
+	LongDouble eps;
+	eps.digits = vector<int>(1, 1);
+	eps.exponent = 1 - sqrtDigits;
+
+	do {
+		x0 = xk;
+		xk = p * (x0 + *this / x0);
+	} while ((x0 - xk).abs() > eps);
+
+	xk.digits.erase(xk.digits.begin() + max((long) 0, xk.exponent) + sqrtDigits, xk.digits.end());
+	xk.removeZeroes();
+
+	return xk;
 }
 
 LongDouble LongDouble::pow(const LongDouble& n) const {

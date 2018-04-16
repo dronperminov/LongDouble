@@ -56,6 +56,29 @@ TestT testMe(char op, const LongDouble &op1, const LongDouble &op2, const LongDo
 	return test;
 }
 
+TestT testMe(char op, const LongDouble &op1, const LongDouble &res) {
+	TestT test;
+
+	test.op1 = op1;
+
+	clock_t t0 = clock();
+
+	switch (op) {
+		case 'v':
+			test.obtained = op1.sqrt();
+			break;
+	}
+
+	clock_t t1 = clock();
+
+	test.time = ((double) (t1 - t0)) * 1000 / CLOCKS_PER_SEC;
+	test.expected = res;
+	test.op = op;
+	test.correct = test.expected == test.obtained;
+
+	return test;
+}
+
 void printTestResults(const vector<TestT>& tests) {
 	size_t results = 0;
 
@@ -66,8 +89,16 @@ void printTestResults(const vector<TestT>& tests) {
 
 		if (tests[i].correct)
 			cout << "OK (" << tests[i].time << " ms)";
-		else
-			cout << "Failed: " << tests[i].op1 << " " << tests[i].op << " " << tests[i].op2 << " = " << tests[i].expected << " != " << tests[i].obtained;
+		else {
+			cout << "Failed: ";
+
+			if (tests[i].op != 'v') {
+				cout << tests[i].op1 << " " << tests[i].op << " " << tests[i].op2 << " = " << tests[i].expected << " != " << tests[i].obtained;
+			}
+			else {
+				cout << "sqrt(" << tests[i].op1 << ") = " << tests[i].expected << " != " << tests[i].obtained;	
+			}
+		}
 		
 		cout << endl;
 	}
@@ -265,7 +296,28 @@ void powTest() {
 	powers.push_back(testMe('^', 5, 30, LongDouble("931322574615478515625")));
 
 	cout << "Test of powers LongDouble" << endl;
-	printTestResults(powers);		
+	printTestResults(powers);
+}
+
+void sqrtTest() {
+	std::vector<TestT> sqrts;
+
+	sqrts.push_back(testMe('v', 0, 0));
+	sqrts.push_back(testMe('v', 1, 1));
+	sqrts.push_back(testMe('v', 4, 2));
+	sqrts.push_back(testMe('v', 9, 3));
+
+	sqrts.push_back(testMe('v', 100, 10));
+	sqrts.push_back(testMe('v', 225, 15));
+	sqrts.push_back(testMe('v', 10000000000, 100000));
+
+	sqrts.push_back(testMe('v', 1.44, 1.2));
+	sqrts.push_back(testMe('v', 2.25, 1.5));
+	sqrts.push_back(testMe('v', 0.01, 0.1));
+	sqrts.push_back(testMe('v', 0.0001, 0.01));
+
+	cout << "Test of roots LongDouble" << endl;
+	printTestResults(sqrts);
 }
 
 int main() {
@@ -274,4 +326,5 @@ int main() {
 	multTest();
 	divTest();
 	powTest();
+	sqrtTest();
 }
