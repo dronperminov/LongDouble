@@ -41,6 +41,9 @@ TestT testMe(char op, const LongDouble &op1, const LongDouble &op2, const LongDo
 		case '/':
 			test.obtained = op1 / op2;
 			break;
+
+		case '^':
+			test.obtained = op1.pow(op2);
 	}
 
 	clock_t t1 = clock();
@@ -228,14 +231,47 @@ void divTest() {
 	printTestResults(divisions);
 }
 
+void powTest() {
+	vector<TestT> powers;
+	
+	powers.push_back(testMe('^', 1, 0, 1));
+	powers.push_back(testMe('^', 100, 0, 1));
+	powers.push_back(testMe('^', -100, 0, 1));
+	powers.push_back(testMe('^', 10000, 0, 1));
+
+	powers.push_back(testMe('^', -1, 1, -1));
+	powers.push_back(testMe('^', -1, 2, 1));
+	powers.push_back(testMe('^', -1, 3, -1));
+	powers.push_back(testMe('^', -1, 4, 1));
+	powers.push_back(testMe('^', -1, 5, -1));
+	powers.push_back(testMe('^', -1, 100, 1));
+
+	powers.push_back(testMe('^', 2, 0, 1));
+	powers.push_back(testMe('^', 2, 5, 32));
+	powers.push_back(testMe('^', 2, 31, 2147483648));
+
+	powers.push_back(testMe('^', 2, -1, 0.5));	
+	powers.push_back(testMe('^', 2, -4, 0.0625));	
+	powers.push_back(testMe('^', 2, -10, LongDouble("0.0009765625")));
+
+	powers.push_back(testMe('^', 2.5, -1, 0.4));
+	powers.push_back(testMe('^', 0.01, -3, 1000000));
+	powers.push_back(testMe('^', 3.25, 2, 10.5625));
+
+	powers.push_back(testMe('^', 5, 3, 125));
+	powers.push_back(testMe('^', 125, -3, LongDouble("0.000000512000000")));
+	powers.push_back(testMe('^', 2, -23, LongDouble("0.00000011920928955078125")));
+	powers.push_back(testMe('^', 2, 100, LongDouble("1267650600228229401496703205376")));
+	powers.push_back(testMe('^', 5, 30, LongDouble("931322574615478515625")));
+
+	cout << "Test of powers LongDouble" << endl;
+	printTestResults(powers);		
+}
+
 int main() {
 	addTest();
 	subTest();
 	multTest();
 	divTest();
-
-	LongDouble x = LongDouble(3).inverse();
-	LongDouble y = x * 2 + x * 5 + x * 8;
-
-	cout << y;
+	powTest();
 }

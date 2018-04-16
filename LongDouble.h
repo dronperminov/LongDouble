@@ -37,10 +37,21 @@ public:
 	LongDouble operator*(const LongDouble& x) const;
 	LongDouble operator/(const LongDouble& x) const;
 
+	LongDouble& operator+=(const LongDouble& x);
+	LongDouble& operator-=(const LongDouble& x);
+	LongDouble& operator*=(const LongDouble& x);
+	LongDouble& operator/=(const LongDouble& x);
+
 	LongDouble operator++(int);
 	LongDouble operator--(int);
 
 	LongDouble inverse() const;
+	LongDouble pow(const LongDouble &n) const;
+	LongDouble abs() const;
+
+	bool isInteger() const;
+	bool isEven() const;
+	bool isOdd() const;
 
 	friend std::ostream& operator<<(std::ostream& os, const LongDouble& value);
 };

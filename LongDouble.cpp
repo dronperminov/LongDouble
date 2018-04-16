@@ -353,6 +353,22 @@ LongDouble LongDouble::operator/(const LongDouble& x) const {
 	return res;
 }
 
+LongDouble& LongDouble::operator+=(const LongDouble& x) {
+	return (*this = *this + x);
+}
+	
+LongDouble& LongDouble::operator-=(const LongDouble& x) {
+	return (*this = *this - x);
+}
+
+LongDouble& LongDouble::operator*=(const LongDouble& x) {
+	return (*this = *this * x);
+}
+
+LongDouble& LongDouble::operator/=(const LongDouble& x) {
+	return (*this = *this / x);
+}
+
 LongDouble LongDouble::operator++(int) {
 	LongDouble res(*this);
 	*this = *this + 1;
@@ -409,6 +425,62 @@ LongDouble LongDouble::inverse() const {
 	} while (mod != 0 && numbers < divDigits + max((long) 0, res.exponent));
 
 	return res;
+}
+
+LongDouble LongDouble::pow(const LongDouble& n) const {
+	if (!n.isInteger())
+		throw string("LongDouble LongDouble::power(const LongDouble& n) - n is not integer!");
+
+	LongDouble res("1");
+	LongDouble a = n.sign == 1 ? *this : this->inverse();
+	LongDouble power = n.abs();
+
+	while (power > 0) {
+		if (power.isOdd())
+			res *= a;
+
+		a *= a;
+		power /= 2;
+
+		if (!power.isInteger())
+			power.digits.erase(power.digits.end() - 1);
+	}
+
+	return res;
+}
+
+LongDouble LongDouble::abs() const {
+	LongDouble res(*this);
+	res.sign = 1;
+
+	return res;
+}
+
+bool LongDouble::isInteger() const {
+	if (exponent < 0)
+		return false;
+
+	return digits.size() <= (size_t) exponent;
+}
+
+bool LongDouble::isEven() const {
+	if (!isInteger())
+		return false;
+
+	if (digits.size() == (size_t) exponent)
+		return digits[digits.size() - 1] % 2 == 0;
+
+	return true;
+}
+
+bool LongDouble::isOdd() const {
+	if (!isInteger())
+		return false;
+
+	if (digits.size() == (size_t) exponent)
+		return digits[digits.size() - 1] % 2 == 1;
+
+	return false;
 }
 
 ostream& operator<<(ostream& os, const LongDouble& value) {
