@@ -101,7 +101,7 @@ LongDouble::LongDouble() {
 LongDouble::LongDouble(const LongDouble& x) {
 	sign = x.sign;
 	exponent = x.exponent;
-	digits = vector<int>(x.digits);
+	digits = vector<int>(x.digits.size());
 
 	for (size_t i = 0; i < x.digits.size(); i++)
 		digits[i] = x.digits[i];
@@ -126,7 +126,7 @@ LongDouble& LongDouble::operator=(const LongDouble& x) {
 
 	sign = x.sign;
 	exponent = x.exponent;
-	digits = vector<int>(x.digits);
+	digits = vector<int>(x.digits.size());
 
 	for (size_t i = 0; i < x.digits.size(); i++)
 		digits[i] = x.digits[i];
