@@ -5,7 +5,7 @@
 #include <vector>
 
 class LongDouble {
-	const int divDigits = 1000;
+	const size_t divDigits = 1000;
 
 	int sign;
 	std::vector<int> digits;
@@ -13,7 +13,8 @@ class LongDouble {
 
 	void initFromString(const std::string& s);
 	void removeZeroes();
-	
+	void normalize();
+
 public:
 	LongDouble();
 	LongDouble(const LongDouble& x);

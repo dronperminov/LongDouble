@@ -43,6 +43,47 @@ void LongDouble::removeZeroes() {
 		exponent = 1;
 		sign = 1;
 	}
+
+	normalize();
+}
+
+void LongDouble::normalize() {
+	size_t start = max(exponent, (long) 0);
+	size_t realDigits = digits.size() - start;
+
+	if (realDigits == divDigits) {
+		size_t count = 0;
+		size_t maxCount = 0;
+
+		size_t i = start;
+
+		while(i < digits.size()) {
+			count = 0;
+
+			while (i < digits.size() && digits[i] == 9) {
+				count++;
+				i++;
+			}
+			
+			if (count > maxCount)
+				maxCount = count;
+
+			i++;
+		}
+		
+		if (maxCount > divDigits * 4 / 5) {
+			i = digits.size() - 1;
+
+			while (i > 0 && digits[i] != 9)
+				i--;
+
+			while (i > 0 && digits[i] == 9)
+				i--;
+
+			digits.erase(digits.begin() + i + 1, digits.end());
+			digits[i]++;
+		}
+	}
 }
 
 LongDouble::LongDouble() {
@@ -352,7 +393,7 @@ LongDouble LongDouble::inverse() const {
 
 	LongDouble mod = d;
 
-	int numbers = 0;
+	size_t numbers = 0;
 
 	do {
 		int div = 0;
@@ -365,7 +406,7 @@ LongDouble LongDouble::inverse() const {
 		mod = mod * 10;
 		res.digits.push_back(div);
 		numbers++;
-	} while (mod != 0 && numbers < divDigits + res.exponent);
+	} while (mod != 0 && numbers < divDigits + max((long) 0, res.exponent));
 
 	return res;
 }
@@ -408,13 +449,6 @@ ostream& operator<<(ostream& os, const LongDouble& value) {
 		for (size_t i = 0; i < value.digits.size(); i++)
 			os << value.digits[i];
 	}
-
-	/*os << "\t(";
-	if (value.sign == -1)
-		os << '-';	
-	for (size_t i = 0; i < value.digits.size(); i++)
-		os << value.digits[i];
-	os << ", exp: " << value.exponent << ")";*/
 
 	return os;
 }

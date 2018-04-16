@@ -199,14 +199,23 @@ void divTest() {
 	divisions.push_back(testMe('/', 0, -0.125, 0));
 	divisions.push_back(testMe('/', 0, -0.0037, 0));
 
+	divisions.push_back(testMe('/', 1, 2, 0.5));
+	divisions.push_back(testMe('/', 1, 4, 0.25));
+	divisions.push_back(testMe('/', 1, 5, 0.2));
+
 	divisions.push_back(testMe('/', 1, 0.125, 8));
 	divisions.push_back(testMe('/', 1, -0.125, -8));
 	divisions.push_back(testMe('/', -1, 0.125, -8));
 	divisions.push_back(testMe('/', -1, -0.125, 8));
 
 	divisions.push_back(testMe('/', 3, 5, 0.6));
+	divisions.push_back(testMe('/', 3.96, 4, 0.99));
 	divisions.push_back(testMe('/', 15, 3, 5));
 	divisions.push_back(testMe('/', 45, 6, 7.5));
+
+	divisions.push_back(testMe('/', 6, 3, 2));
+	divisions.push_back(testMe('/', 21, 3, 7));
+	divisions.push_back(testMe('/', 77777, 7, 11111));
 
 	divisions.push_back(testMe('/', 12345, 800, 15.43125));
 
@@ -224,4 +233,9 @@ int main() {
 	subTest();
 	multTest();
 	divTest();
+
+	LongDouble x = LongDouble(3).inverse();
+	LongDouble y = x * 2 + x * 5 + x * 8;
+
+	cout << y;
 }
