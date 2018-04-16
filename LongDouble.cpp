@@ -95,13 +95,13 @@ void LongDouble::normalize() {
 LongDouble::LongDouble() {
 	sign = 1;
 	digits = vector<int>(1, 0);
-	exponent = 0;
+	exponent = 1;
 }
 
 LongDouble::LongDouble(const LongDouble& x) {
 	sign = x.sign;
 	exponent = x.exponent;
-	digits = vector<int>(x.digits.size());
+	digits = vector<int>(x.digits);
 
 	for (size_t i = 0; i < x.digits.size(); i++)
 		digits[i] = x.digits[i];
@@ -127,6 +127,9 @@ LongDouble& LongDouble::operator=(const LongDouble& x) {
 	sign = x.sign;
 	exponent = x.exponent;
 	digits = vector<int>(x.digits);
+
+	for (size_t i = 0; i < x.digits.size(); i++)
+		digits[i] = x.digits[i];
 
 	return *this;
 }
@@ -160,7 +163,7 @@ bool LongDouble::operator<(const LongDouble& x) const {
 }
 
 bool LongDouble::operator>=(const LongDouble& x) const {
-	return (*this > x || *this == x);
+	return *this > x || *this == x;
 }
 
 bool LongDouble::operator<=(const LongDouble& x) const {
@@ -229,11 +232,8 @@ LongDouble LongDouble::operator+(const LongDouble& x) const {
 		res.sign = sign;
 		res.digits = vector<int>(len, 0);
 
-		for (int i = d1.size() - 1; i >= 0; i--)
-			res.digits[len - d1.size() + i] = d1[i];
-
-		for (int i = d2.size() - 1; i >= 0; i--)
-			res.digits[len - d2.size() + i] += d2[i];
+		for (size_t i = 0; i < size; i++)
+			res.digits[i + 1] = d1[i] + d2[i];
 
 		for (size_t i = len - 1; i > 0; i--) {
 			res.digits[i - 1] += res.digits[i] / 10;
@@ -288,11 +288,8 @@ LongDouble LongDouble::operator-(const LongDouble& x) const {
 		res.sign = cmp ? 1 : -1;
 		res.digits = vector<int>(len, 0);
 
-		for (int i = d1.size() - 1; i >= 0; i--)
-			res.digits[len - d1.size() + i] = d1[i];
-
-		for (int i = d2.size() - 1; i >= 0; i--)
-			res.digits[len - d2.size() + i] -= d2[i];
+		for (size_t i = 0; i < size; i++)
+			res.digits[i + 1] = d1[i] - d2[i];
 
 		for (size_t i = len - 1; i > 0; i--) {
 			if (res.digits[i] < 0) {
@@ -324,7 +321,7 @@ LongDouble LongDouble::operator*(const LongDouble& x) const {
 
 	for (size_t i = 0; i < digits.size(); i++)
 		for (size_t j = 0; j < x.digits.size(); j++)
-			res.digits[len - 1 - i - j] += digits[digits.size() - 1 - i] * x.digits[x.digits.size() - 1 - j];
+			res.digits[i + j + 1] += digits[i] * x.digits[j];
 
 	for (size_t i = len - 1; i > 0; i--) {
 		res.digits[i - 1] += res.digits[i] / 10;
@@ -413,22 +410,22 @@ LongDouble LongDouble::inverse() const {
 	
 	res.exponent -= d.exponent - 1;
 
-	LongDouble mod = d;
-
 	size_t numbers = 0;
 
 	do {
 		int div = 0;
 
-		while (mod >= x) {
+		while (d >= x) {
 			div++;
-			mod = mod - x;
+			d = d - x;
 		}
 
-		mod = mod * 10;
+		d.exponent++;
+		d.removeZeroes();
+
 		res.digits.push_back(div);
 		numbers++;
-	} while (mod != 0 && numbers < divDigits + max((long) 0, res.exponent));
+	} while (d != 0 && numbers < divDigits + max((long) 0, res.exponent));
 
 	return res;
 }
