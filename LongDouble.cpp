@@ -39,7 +39,7 @@ void LongDouble::removeZeroes() {
 	while (digits.size() > 1 && digits[digits.size() - 1] == 0)
 		digits.erase(digits.end() - 1);
 
-	if (digits.size() == 1 && digits[0] == 0) {
+	if (isZero()) {
 		exponent = 1;
 		sign = 1;
 	}
@@ -386,8 +386,16 @@ LongDouble LongDouble::operator--(int) {
 	return res;
 }
 
+LongDouble& LongDouble::operator++() {
+	return (*this = *this + 1);
+}
+
+LongDouble& LongDouble::operator--() {
+	return (*this = *this - 1);
+}
+
 LongDouble LongDouble::inverse() const {
-	if (digits.size() == 1 && digits[0] == 0)
+	if (isZero())
 		throw string("LongDouble LongDouble::inverse() - division by zero!");
 
 	LongDouble x(*this);
@@ -411,13 +419,15 @@ LongDouble LongDouble::inverse() const {
 	res.exponent -= d.exponent - 1;
 
 	size_t numbers = 0;
+	size_t intPart = max((long) 0, res.exponent);
+	size_t maxNumbers = divDigits + intPart;
 
 	do {
 		int div = 0;
 
 		while (d >= x) {
 			div++;
-			d = d - x;
+			d -= x;
 		}
 
 		d.exponent++;
@@ -425,7 +435,7 @@ LongDouble LongDouble::inverse() const {
 
 		res.digits.push_back(div);
 		numbers++;
-	} while (d != 0 && numbers < divDigits + max((long) 0, res.exponent));
+	} while (!d.isZero() && numbers < maxNumbers);
 
 	return res;
 }
@@ -434,7 +444,7 @@ LongDouble LongDouble::sqrt() const {
 	if (sign == -1)
 		throw string("LongDouble LongDouble::sqrt() - number is negative");
 
-	if (digits.size() == 1 && digits[0] == 0)
+	if (isZero())
 		return 0;
 
 	LongDouble x0;
@@ -509,6 +519,10 @@ bool LongDouble::isOdd() const {
 		return digits[digits.size() - 1] % 2 == 1;
 
 	return false;
+}
+
+bool LongDouble::isZero() const {
+	return digits.size() == 1 && digits[0] == 0;
 }
 
 ostream& operator<<(ostream& os, const LongDouble& value) {

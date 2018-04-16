@@ -46,6 +46,9 @@ public:
 	LongDouble operator++(int);
 	LongDouble operator--(int);
 
+	LongDouble& operator++();
+	LongDouble& operator--();
+
 	LongDouble inverse() const;
 	LongDouble sqrt() const;
 	LongDouble pow(const LongDouble &n) const;
@@ -54,6 +57,7 @@ public:
 	bool isInteger() const;
 	bool isEven() const;
 	bool isOdd() const;
+	bool isZero() const;
 
 	friend std::ostream& operator<<(std::ostream& os, const LongDouble& value);
 };
