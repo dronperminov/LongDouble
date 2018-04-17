@@ -336,7 +336,12 @@ LongDouble LongDouble::operator*(const LongDouble& x) const {
 LongDouble LongDouble::operator/(const LongDouble& x) const {
 	LongDouble res = *this * x.inverse();
 
-	size_t i = res.digits.size() - 1 - max((long)0, exponent);
+	size_t intPart = max((long)0, exponent);
+
+	if (intPart > res.digits.size() - 1)
+		return res;
+
+	size_t i = res.digits.size() - 1 - intPart;
 	size_t n = max((long) 0, res.exponent);
 
 	if (i > n && res.digits[i] == 9) {
